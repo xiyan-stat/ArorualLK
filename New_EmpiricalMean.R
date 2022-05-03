@@ -7,13 +7,13 @@ library(tidyverse)
 require(class)
 
 #################################################
-## Ground base data
-load("flux_north_10_new.RData")
+## Load Ground base data
+load("~.RData")
 data.flux.grd_new <- data.flux.grd_n
 
 ################################################
-## Satellite and Interpolated Data
-load("flux_north_10.RData")
+## Load Satellite and Interpolated Data
+load("~.RData")
 
 #1. satellite data: data.flux.sate_n
 #2. interpolated data: data.flux.inter_n
@@ -109,23 +109,9 @@ Emp_Data <- function(index, time, location){
   return(emp)
 }
 
-## Empirical data
-  
-  # kpt <- approx(x = seq(from = 0, to = 1440, by = 180), y = c(1.3, 6, 6, 5, 4.7, 3.7, 2, 3, 3), xout = time_pt)$y
-  # x_e <- c(sate$x, grd$x)
-  # y_e <- c(sate$y, grd$y)
-  # flux_e <- c(sate$x, grd$y)
-  # valid1 <- flux_e > 0
-  # valid1[is.na(valid1)] <- FALSE
-  # index.e <- length(flux_e[valid1])
-  # loc.e <- data.frame(x=x_e[valid1], y=y_e[valid1])
-  # if (sum(valid1) >= 1) {
-  #     emp_flux <- Emp_Data(1:index.e, time_pt,loc.e)
-  #     ratio_e <- median(flux_e[valid1]) / median(emp_flux)
-  #   }
 
 
-# Funtion using the empirical as mean
+# AuroralLK Funtion using the empirical as mean
 
 LK.Empmean.10m <- function(data1, data2,data4, 
                            nmlat=363, nmlt=363, time_pt, 
@@ -134,7 +120,7 @@ LK.Empmean.10m <- function(data1, data2,data4,
   ################################################################################
   # NCs = a vector of NC for low, medium and high scales
   # nlevels = a vector of nlevel for low, medium and high scales
-  # 1. inter, 2. emp.in, 3. emp.out, 4. grd, 5. inter itself
+  # 1. inter, 4. grd, 5. inter itself
   # kn = a vector of knn for low, medium and high scales
   # bmethod = boundary method for low medium and high scales
   ################################################################################
@@ -143,7 +129,7 @@ LK.Empmean.10m <- function(data1, data2,data4,
   require(LatticeKrig)
   require(tidyverse)
   require(class)
-  #require(sp)
+ 
   
   `%notin%` <- Negate(`%in%`)
   if (ncol(data1) != 5 | ncol(data2) != 5) {print("Data are not valid")}
@@ -561,10 +547,7 @@ LK.Empmean.10m <- function(data1, data2,data4,
   return(list(p=p,p1 = p1, p2 = p2, pe = pe, pu= pu, res1 = comb, res2 = comb.1, res3 = comb.2, res4 = comb.e, uncertain = uncertainty3))
 }
 
+## Example: Output Map from 6:55 - 7:05
 test7 <- LK.Empmean.10m (data1 = data.flux.inter_n, data2 = data.flux.sate_n, data4 = data.flux.grd_new,
                         nmlat=363, nmlt=363, time_pt=420, ratio1=1/6,  ratio4=1,ratio5=1/10,
                         NCs=c(5,20,25), nlevels= c(1,1,3), kn = c(60,20,10))
-test11 <- LK.Empmean.10m (data1 = data.flux.inter_n, data2 = data.flux.sate_n, data4 = data.flux.grd_new,
-                         nmlat=363, nmlt=363, time_pt=660, ratio1=1/6, ratio4=1,ratio5=1/10,
-                         NCs=c(5,20,25), nlevels= c(1,1,3), kn = c(60,20,10))
-save(test11, file="empmean_11.RData")
